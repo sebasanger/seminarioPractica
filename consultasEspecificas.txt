@@ -1,0 +1,11 @@
+SELECT * FROM hoteldb.habitaciones hab 
+RIGHT JOIN hoteldb.reservas res ON res.habitaciones_id = hab.id
+WHERE NOT (
+    (res.fecha_inicio BETWEEN '2024-09-01' AND '2024-09-10') 
+    OR
+    (res.fecha_fin BETWEEN '2024-09-15' AND '2024-09-25')
+    OR
+    ('2024-09-01' BETWEEN r.fecha_inicio AND r.fecha_fin)
+    OR
+    ('2024-09-15' BETWEEN r.fecha_inicio AND r.fecha_fin)
+);

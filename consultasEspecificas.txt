@@ -1,11 +1,81 @@
-SELECT * FROM hoteldb.habitaciones hab 
-RIGHT JOIN hoteldb.reservas res ON res.habitaciones_id = hab.id
-WHERE NOT (
-    (res.fecha_inicio BETWEEN '2024-09-01' AND '2024-09-10') 
+----------------------------------------------------------------------------------------------------------------------------------
+Habitaciones libres para 4 personas o mas entre el 5 y 8 de octubre
+
+
+SELECT hab.id, hab.numeroHabitacion, hab.capacidad, hab.disponible, hab.piso, hab.camasSingles, hab.camasDobles, hab.habilitada 
+FROM hoteldb.habitaciones hab 
+LEFT JOIN hoteldb.reservas res ON res.habitaciones_id = hab.id
+AND (
+	(res.fechaInicio BETWEEN '2024-10-05' AND '2024-10-08') 
+	OR
+	(res.fechaFin BETWEEN '2024-10-05' AND '2024-10-08')
+	OR
+    ('2024-10-05' BETWEEN res.fechaInicio AND res.fechaFin)
     OR
-    (res.fecha_fin BETWEEN '2024-09-15' AND '2024-09-25')
+    ('2024-10-08' BETWEEN res.fechaInicio AND res.fechaFin)
+)
+WHERE hab.capacidad >= 4 AND res.id IS NULL;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+Habitaciones libres para 3 personas o mas entre el 1 y 10 de octubre
+
+
+SELECT hab.id, hab.numeroHabitacion, hab.capacidad, hab.disponible, 
+hab.piso, hab.camasSingles, hab.camasDobles, hab.habilitada 
+FROM hoteldb.habitaciones hab 
+LEFT JOIN hoteldb.reservas res ON res.habitaciones_id = hab.id
+AND (
+	(res.fechaInicio BETWEEN '2024-10-01' AND '2024-10-10') 
+	OR
+	(res.fechaFin BETWEEN '2024-10-01' AND '2024-10-10')
+	OR
+    ('2024-10-01' BETWEEN res.fechaInicio AND res.fechaFin)
     OR
-    ('2024-09-01' BETWEEN r.fecha_inicio AND r.fecha_fin)
-    OR
-    ('2024-09-15' BETWEEN r.fecha_inicio AND r.fecha_fin)
-);
+    ('2024-10-10' BETWEEN res.fechaInicio AND res.fechaFin)
+)
+WHERE hab.capacidad >= 3 AND res.id IS NULL;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+Consumiciones con la descripción de su producto
+
+SELECT con.id, con.precioTotal, con.fecha, prod.nombre, prod.descripcion,
+con.cantidad, con.precioTotal
+FROM hoteldb.consumiciones con
+INNER JOIN  hoteldb.productos prod ON  con.productos_id = prod.id;
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+Personas con su descripción y reserva
+
+SELECT cli.nombre, cli.apellido, res.id as idReserva, res.fechaInicio, res.fechaFin
+FROM hoteldb.reservas res 
+INNER JOIN hoteldb.reservas_clientes rescli ON rescli.reservas_id = res.id
+INNER JOIN hoteldb.clientes cli ON cli.id = rescli.clientes_id;
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+Ver reservas activas
+
+SELECT id, estado, fechaInicio, fechaFin FROM hoteldb.reservas res
+where estado = 'activa';
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+Reservas con faltante de pagos
+
+SELECT id, estado, fechaInicio, fechaFin, pagadoTotal, 
+precioTotal FROM hoteldb.reservas res
+where pagadoTotal < precioTotal;
+
+
+----------------------------------------------------------------------------------------------------------------------------------
